@@ -1,0 +1,51 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.17;
+
+contract ErrorHandling {
+    string public contractName = "Error Handling";
+    uint public storedValue;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Function using require() to validate input
+    function setValue(uint _value) public {
+        require(_value > 0, "Value must be greater than 0");
+        storedValue = _value;
+    }
+
+    // Function using assert() to check for an invariant
+    function checkInvariant() public view returns (bool) {
+        // Assert that storedValue is always greater than or equal to 0
+        assert(storedValue >= 0);
+        return true;
+    }
+
+    // Function using revert() for custom error handling
+    function resetValue() public {
+        if (msg.sender != owner) {
+            revert("Only the owner can reset the value");
+        }
+        storedValue = 0;
+    }
+
+    // Function to demonstrate the combination of require, assert, and revert
+    function complexFunction(uint _value) public {
+        // Use require to validate initial conditions
+        require(_value > 0, "Value must be greater than 0");
+        require(msg.sender == owner, "Only the owner can call this function");
+
+        // Perform some operation
+        storedValue = _value * 2;
+
+        // Use assert to check for an invariant
+        assert(storedValue > _value);
+
+        // Custom error handling using revert
+        if (storedValue < _value) {
+            revert("Stored value is less than the input value");
+        }
+    }
+}
